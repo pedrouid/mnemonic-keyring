@@ -2,11 +2,14 @@
 import ed25519 from 'bcrypto/lib/ed25519';
 // @ts-ignore
 import secp256k1 from 'bcrypto/lib/secp256k1';
+// @ts-ignore
+import random from 'bcrypto/lib/random';
+// @ts-ignore
+import base16 from 'bcrypto/lib/encoding/base16';
+
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
 import Store from '@pedrouid/iso-store';
-import * as isoCrypto from '@pedrouid/iso-crypto';
-import * as encUtils from 'enc-utils';
 
 import { KeyPair, KeyringOptions, MasterKey } from './types';
 import {
@@ -17,8 +20,7 @@ import {
 
 export class MnemonicKeyring {
   public static generateMnemonic(length = DEFAULT_ENTROPY_LENGTH): string {
-    const entropy = isoCrypto.randomBytes(length);
-    return bip39.entropyToMnemonic(encUtils.arrayToBuffer(entropy));
+    return bip39.entropyToMnemonic(random.randomBytes(length));
   }
 
   public static async deriveMasterKey(mnemonic: string): Promise<MasterKey> {
@@ -84,7 +86,7 @@ export class MnemonicKeyring {
     derivationPath: string
   ): string {
     const hdnode = masterKey.derivePath(derivationPath);
-    return encUtils.bufferToHex(hdnode.privateKey || Buffer.from([]));
+    return base16.encode(hdnode.privateKey || Buffer.from([]));
   }
   private derivePublicKey(
     privateKey: string,
@@ -93,20 +95,14 @@ export class MnemonicKeyring {
     let publicKey: Buffer;
     switch (ellipticCurve) {
       case 'ed25519':
-        publicKey = ed25519.publicKeyCreate(
-          encUtils.hexToBuffer(privateKey),
-          true
-        );
+        publicKey = ed25519.publicKeyCreate(base16.decode(privateKey), true);
         break;
       case 'secp256k1':
-        publicKey = secp256k1.publicKeyCreate(
-          encUtils.hexToBuffer(privateKey),
-          true
-        );
+        publicKey = secp256k1.publicKeyCreate(base16.decode(privateKey), true);
         break;
       default:
         throw new Error(`Elliptic curve not supported: ${ellipticCurve}`);
     }
-    return encUtils.bufferToHex(publicKey);
+    return base16.encode(publicKey);
   }
 }
