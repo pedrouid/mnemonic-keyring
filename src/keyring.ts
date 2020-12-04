@@ -9,7 +9,6 @@ import base16 from 'bcrypto/lib/encoding/base16';
 
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
-import Store from '@pedrouid/iso-store';
 
 import { KeyPair, KeyringOptions, MasterKey } from './types';
 import {
@@ -40,20 +39,19 @@ export class MnemonicKeyring {
     } else {
       mnemonic =
         opts.mnemonic ||
-        (await opts.store.get(storeKey)) ||
+        (typeof opts.store !== 'undefined'
+          ? await opts.store.get(storeKey)
+          : undefined) ||
         this.generateMnemonic(entropyLength);
     }
-    await opts.store.set(storeKey, mnemonic);
+    if (typeof opts.store !== 'undefined') {
+      await opts.store.set(storeKey, mnemonic);
+    }
     const masterKey = await this.deriveMasterKey(mnemonic);
-    return new MnemonicKeyring(opts.store, mnemonic, masterKey);
+    return new MnemonicKeyring(mnemonic, masterKey);
   }
 
-  constructor(
-    public store: Store,
-    public mnemonic: string,
-    public masterKey: MasterKey
-  ) {
-    this.store = store;
+  constructor(public mnemonic: string, public masterKey: MasterKey) {
     this.mnemonic = mnemonic;
     this.masterKey = masterKey;
   }

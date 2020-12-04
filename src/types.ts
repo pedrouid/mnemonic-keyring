@@ -2,7 +2,7 @@ import Store from '@pedrouid/iso-store';
 import * as bip32 from 'bip32';
 
 export interface KeyringOptions {
-  store: Store;
+  store?: Store;
   storeKey?: string;
   mnemonic?: string;
   entropyLength?: number;

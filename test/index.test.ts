@@ -1,5 +1,3 @@
-import Store from '@pedrouid/iso-store';
-
 import MnemonicKeyring from '../src';
 
 const TEST_DERIVATION_PATH = "m/44'/60'/0'/0";
@@ -16,12 +14,7 @@ const TEST_PUBLIC_KEY = {
 describe('MnemonicKeyring', () => {
   let keyring: MnemonicKeyring;
   beforeAll(async () => {
-    const store = new Store();
-    await store.init();
-    keyring = await MnemonicKeyring.init({
-      mnemonic: TEST_MNEMMONIC,
-      store,
-    });
+    keyring = await MnemonicKeyring.init({ mnemonic: TEST_MNEMMONIC });
   });
   it('init', async () => {
     expect(keyring).toBeTruthy();
