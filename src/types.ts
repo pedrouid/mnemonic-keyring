@@ -1,9 +1,9 @@
-import Store from '@pedrouid/iso-store';
+import { IKeyValueStorage } from 'keyvaluestorage';
 import * as bip32 from 'bip32';
 
 export interface KeyringOptions {
-  store?: Store;
-  storeKey?: string;
+  storage?: IKeyValueStorage;
+  storageKey?: string;
   mnemonic?: string;
   entropyLength?: number;
 }

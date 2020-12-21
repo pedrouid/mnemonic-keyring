@@ -14,7 +14,7 @@ import { KeyPair, KeyringOptions, MasterKey } from './types';
 import {
   DEFAULT_ELLIPTIC_CURVE,
   DEFAULT_ENTROPY_LENGTH,
-  DEFAULT_STORE_KEY,
+  DEFAULT_STORAGE_KEY,
 } from './constants';
 
 export class MnemonicKeyring {
@@ -31,7 +31,7 @@ export class MnemonicKeyring {
   }
 
   public static async init(opts: KeyringOptions): Promise<MnemonicKeyring> {
-    const storeKey = opts.storeKey || DEFAULT_STORE_KEY;
+    const storageKey = opts.storageKey || DEFAULT_STORAGE_KEY;
     const entropyLength = opts.entropyLength || DEFAULT_ENTROPY_LENGTH;
     let mnemonic: string;
     if (typeof opts.mnemonic !== 'undefined') {
@@ -39,13 +39,13 @@ export class MnemonicKeyring {
     } else {
       mnemonic =
         opts.mnemonic ||
-        (typeof opts.store !== 'undefined'
-          ? await opts.store.get(storeKey)
+        (typeof opts.storage !== 'undefined'
+          ? await opts.storage.getItem(storageKey)
           : undefined) ||
         this.generateMnemonic(entropyLength);
     }
-    if (typeof opts.store !== 'undefined') {
-      await opts.store.set(storeKey, mnemonic);
+    if (typeof opts.storage !== 'undefined') {
+      await opts.storage.setItem(storageKey, mnemonic);
     }
     const masterKey = await this.deriveMasterKey(mnemonic);
     return new MnemonicKeyring(mnemonic, masterKey);
