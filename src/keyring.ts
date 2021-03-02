@@ -1,9 +1,10 @@
+import * as encUtils from 'enc-utils';
+import { randomBytes } from '@pedrouid/iso-random';
+
 // @ts-ignore
 import ed25519 from 'bcrypto/lib/ed25519';
 // @ts-ignore
 import secp256k1 from 'bcrypto/lib/secp256k1';
-// @ts-ignore
-import random from 'bcrypto/lib/random';
 // @ts-ignore
 import base16 from 'bcrypto/lib/encoding/base16';
 
@@ -19,7 +20,7 @@ import {
 
 export class MnemonicKeyring {
   public static generateMnemonic(length = DEFAULT_ENTROPY_LENGTH): string {
-    return bip39.entropyToMnemonic(random.randomBytes(length));
+    return bip39.entropyToMnemonic(encUtils.arrayToBuffer(randomBytes(length)));
   }
 
   public static async deriveMasterKey(mnemonic: string): Promise<MasterKey> {

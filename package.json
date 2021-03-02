@@ -62,6 +62,7 @@
     "trailingComma": "es5"
   },
   "dependencies": {
+    "@pedrouid/iso-random": "^1.1.0",
     "bcrypto": "^5.4.0",
     "bip32": "^2.0.6",
     "bip39": "^3.0.3",
